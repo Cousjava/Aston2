@@ -6,6 +6,7 @@ use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
 class RegisterController extends Controller
@@ -51,7 +52,9 @@ class RegisterController extends Controller
         return Validator::make($data, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:8|confirmed',
+            'type' => ['required', Rule::in(['Student', 'Event Organiser'])],
+            'public_email' => 'required|boolean'
         ]);
     }
 
@@ -63,10 +66,20 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        // Already validated above to one of these two
+        if ($data['type'] === 'Student'){
+            $type = 'student';
+        } else {
+            $type = 'event_organiser';
+        }
+        
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'type' => $type,
+            'type'=>$data['type'],
+            'public_email'=>$data['public_email']
         ]);
     }
 }

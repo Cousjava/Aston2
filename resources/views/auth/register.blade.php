@@ -60,6 +60,29 @@
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
                             </div>
                         </div>
+                        
+                        <div class="form-group row">
+                            <label for="type" class="col-md-4 col-form-label text-md-right">{{ __('Type') }}</label>
+                            <div class="col-md-6">
+                                <select name="type">
+                                    <option>Student</option>
+                                    <option>Event Organiser</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row">
+                            <div class="col-md-6 offset-md-4">
+                                <label class="form-check-label" for="public_email">
+                                        {{ __('Public Email') }}
+                                    </label>
+                                
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="public_email" id="public_email" {{ old('public_email') ? 'checked' : '' }}>
+                                </div>
+                                <p>
+                            </div>
+                        </div>
 
                         <div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-4">
