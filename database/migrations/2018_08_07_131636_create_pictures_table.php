@@ -17,9 +17,9 @@ class CreatePicturesTable extends Migration
             $table->increments('id');
             $table->timestamps();
             $table->string('location', 255);
-            $table->unsignedInteger('eventId');
+            $table->unsignedInteger('event_id');
             
-            $table->foreign('eventId')->references('id')->on('events');
+            $table->foreign('event_id')->references('id')->on('events');
         });
     }
 
@@ -31,7 +31,7 @@ class CreatePicturesTable extends Migration
     public function down()
     {
         Schema::table('pictures', function (Blueprint $table) {
-           $table->dropForeign('eventId');
+           $table->dropForeign('event_id');
         });
         Schema::dropIfExists('pictures');
     }
