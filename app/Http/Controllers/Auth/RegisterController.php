@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -53,8 +54,7 @@ class RegisterController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'type' => ['required', Rule::in(['Student', 'Event Organiser'])],
-            'public_email' => 'required|boolean'
+            'type' => ['required', Rule::in(['Student', 'Event Organiser'])]
         ]);
     }
 
@@ -72,14 +72,20 @@ class RegisterController extends Controller
         } else {
             $type = 'event_organiser';
         }
+        if (isset($data['public_email']) && data['public_email']){
+            $publicEmail = true;
+        } else {
+            $publicEmail = false;
+        }
+        
+        Log::info("Creating a new user with " . implode($data));
         
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'type' => $type,
-            'type'=>$data['type'],
-            'public_email'=>$data['public_email']
+            'public_email'=>$publicEmail
         ]);
     }
 }

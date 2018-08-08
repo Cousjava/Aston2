@@ -77,8 +77,9 @@
                                         {{ __('Public Email') }}
                                     </label>
                                 
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="public_email" id="public_email" {{ old('public_email') ? 'checked' : '' }}>
+                                <div class="col-md-6">
+                                    <input class="form-check-input" type="checkbox" name="public_email" id="public_email" 
+                                        value="true" {{ old('public_email') ? 'checked' : '' }}>
                                 </div>
                                 <p>
                             </div>

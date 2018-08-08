@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Event extends Model
 {
     
+    protected $fillable = ['name', 'description', 'date', 'category'];
+    
     /**
      * Gets the pictures for this event
      * @return type
