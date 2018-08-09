@@ -16,11 +16,12 @@ class Edit extends FormRequest
     {
         $user = Auth::get();
         if ($user->type == 'event_organiser'){
-            return true;
-        } else {
-            return false;
+            $eventId = $this->input('id');
+            if (Event::find($eventId) == $user->id) {
+                return true;
+            }
         }
-        
+        return false;
     }
 
     /**
@@ -34,6 +35,7 @@ class Edit extends FormRequest
             'name'=>'required',
             'date'=>'required|date|after:today',
             'time'=>'required',
+            'location'=>'reqired|max:255',
             'category'=> ['required', Rule::in('Sport', 'Culture', 'Other')]
         ];
         $images = count($this->input('images'));

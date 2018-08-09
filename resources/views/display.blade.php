@@ -11,8 +11,10 @@
             </p>
             @endforeach
             
-            <h4>Event Organiser: {{$event->event_organiser}}</h4>
+            <h4>Event Organiser: {{$organiser}}</h4>
             
+            <h4>Date: {{$event->date}}</h4>
+            <h4>Time: {{ str_limit($event->time, 5, '')}}</h4>
             <h4>Location: {{$event->location}}</h4>
             
             <h4>Category: {{$event->category}}</h4>
@@ -20,6 +22,10 @@
             <p>
                 {{$event->description}}    
             </p>
+            
+            @if (Auth::id() == $event->event_organiser)
+            <button onclick="location.href='{{ route('editEvent', $event->id) }}'">Edit</button>
+            @endif
         </div>
     </div>
 </div>

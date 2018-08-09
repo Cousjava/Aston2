@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use App\User;
 use App\Event;
 use App\Picture;
 
@@ -14,7 +15,9 @@ class EventController extends Controller {
     }
 
     public function display($id) {
-        return view('/display', array('event' => Event::findOrFail($id), 'pictures' => Picture::query()->where('event_id', $id)->get()));
+        $event = Event::findOrFail($id);
+        $organiser = User::find($event->event_organiser);
+        return view('/display', array('event' => $event, 'pictures' => Picture::query()->where('event_id', $id)->get(), 'organiser'=> $organiser->name));
     }
     
     public function edit($id) {
@@ -27,13 +30,28 @@ class EventController extends Controller {
     
     public function save(Request $request){
         $data = $request->all();
+        
+        
         $data['event_organiser'] = \Illuminate\Support\Facades\Auth::id();
-         Log::info("Creating a new event with ");
+        Log::info("Creating a new event with ");
         foreach($data as $key => $var){
             Log::info($key." with value of ".$var);
         }
-        Log::info("Creating a new event with ".implode('|', $data));
-        $event = Event::create($data);
+        Log::info("Creating or updating an event with ".implode('|', $data));
+        
+        $event = Event::find($data[id]);
+        if (isset($event)) {
+            Log::info("Updating event".strval($event));
+            $event->fill($data);
+            $event->save();
+            Log::info("Event is now". strval($event));
+            //If checkboxes were checked then delete image
+            foreach($request->oldimages as $toDelete){
+                Picture::destroy($toDelete);
+            }
+        } else {
+            $event = Event::create($data);
+        }
         foreach($request->images as $image){
             $file = $image->store('photos');
             Picture::create(['location' => $file, 'event_id' => $event->id]);
