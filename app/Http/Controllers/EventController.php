@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\Event;
 use App\Picture;
@@ -13,7 +14,31 @@ class EventController extends Controller {
     }
 
     public function display($id) {
-        return view('/display', array('event' => Event::findOrFail($id), 'pictures' => Picture::query()->where('eventId', $id)->get()));
+        return view('/display', array('event' => Event::findOrFail($id), 'pictures' => Picture::query()->where('event_id', $id)->get()));
+    }
+    
+    public function edit($id) {
+        return view('/edit', array('event' => Event::findOrFail($id), 'pictures' => Picture::query()->where('event_id', $id)->get()));
+    }
+    
+    public function newEvent(){
+        return view('/edit');
+    }
+    
+    public function save(Request $request){
+        $data = $request->all();
+        $data['event_organiser'] = \Illuminate\Support\Facades\Auth::id();
+         Log::info("Creating a new event with ");
+        foreach($data as $key => $var){
+            Log::info($key." with value of ".$var);
+        }
+        Log::info("Creating a new event with ".implode('|', $data));
+        $event = Event::create($data);
+        foreach($request->images as $image){
+            $file = $image->store('photos');
+            Picture::create(['location' => $file, 'event_id' => $event->id]);
+        }
+        return redirect('display/'.$event->id);
     }
     
     public function displayInterest($id, $interest) {

@@ -19,7 +19,7 @@ class CreateEventsTable extends Migration
             $table->string('name', 100);
             $table->text('description');
             $table->dateTime('date');
-            $table->enum('category', ['sport', 'culture', 'others']);
+            $table->enum('category', ['Sport', 'Culture', 'Other']);
             $table->timestamps();
             $table->unsignedInteger('event_organiser');
             

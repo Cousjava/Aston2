@@ -29,7 +29,8 @@ Route::get('events/by/popular/{startAt?}', 'EventController@popular')->middlewar
 Route::get('events/by/');
 
 //Organisers
-Route::get('events/new', 'EventController@new')->name('newEvent')->middleware('auth');
-Route::get('events/edit/{id}', 'EventController@edit')->name('editEvent')->middleware('auth');;
+Route::get('events/new', 'EventController@newEvent')->name('newEvent')->middleware('auth');
+Route::get('events/edit/{id}', 'EventController@edit')->name('editEvent')->middleware('auth');
+Route::post('events/save','EventController@save')->name('saveEvent');
 
 
