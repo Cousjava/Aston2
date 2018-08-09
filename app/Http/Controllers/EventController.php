@@ -38,7 +38,7 @@ class EventController extends Controller {
             $file = $image->store('photos');
             Picture::create(['location' => $file, 'event_id' => $event->id]);
         }
-        return redirect('display/'.$event->id);
+        return redirect()->route('display',$event->id);
     }
     
     public function displayInterest($id, $interest) {

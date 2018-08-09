@@ -7,7 +7,7 @@
             <h2>{{ $event->name}}</h2>
             @foreach($pictures as $picture)
             <p>
-                <img src="{{$picture->location }}"></img>
+                <img src="../../storage/app/{{$picture->location }}"></img>
             </p>
             @endforeach
             
@@ -15,10 +15,10 @@
             
             <h4>Location: {{$event->location}}</h4>
             
-            <h4>Category: {{$event->$category}}</h4>
+            <h4>Category: {{$event->category}}</h4>
             
             <p>
-                {{event->description}}    
+                {{$event->description}}    
             </p>
         </div>
     </div>
