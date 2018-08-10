@@ -5,9 +5,9 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Dashboard</div>
+                <div class="card-header">Events</div>
 
-                <table>
+                <table class="wide">
                     <thead>
                         <tr>
                             <th> Event </th>
@@ -17,9 +17,9 @@
                     </thead>
                     <tbody>
                         @foreach($events as $event)
-                        <tr>
-                            <td><a href="{{ route("event/{$event->id}")}}" {{$event->name}}</a> </td>
-                            <td> {{$event->type }} </td>
+                        <tr class="trhover">
+                            <td><a href="{{ route("display", $event->id)}}"> {{$event->name}}</a> </td>
+                            <td> {{$event->category }} </td>
                             <td> {{$event->date}} </td>
                         </tr>
                         @endforeach

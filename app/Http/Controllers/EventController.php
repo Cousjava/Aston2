@@ -11,7 +11,7 @@ use App\Picture;
 class EventController extends Controller {
 
     public function all() {
-        return view('/list', array('account' => Event::all()));
+        return view('/list', array('events' => Event::all()));
     }
 
     public function display($id) {
@@ -31,12 +31,7 @@ class EventController extends Controller {
     public function save(Request $request){
         $data = $request->all();
         
-        
         $data['event_organiser'] = \Illuminate\Support\Facades\Auth::id();
-        Log::info("Creating a new event with ");
-        foreach($data as $key => $var){
-            Log::info($key." with value of ".$var);
-        }
         Log::info("Creating or updating an event with ".implode('|', $data));
         
         $event = Event::find($data[id]);
@@ -75,8 +70,20 @@ class EventController extends Controller {
     }
     
     public function popular() {
-        $events = Event::query()->where('date' >= now())->withCount('attendees')->orderBy('attendees_count', 'desc')->paginate(20);
+        $events = Event::query()->where('date' >= now())->withCount('attendees')->orderBy('attendees_count', 'desc')->paginate(50);
         return view('/list', $events);
+    }
+    
+    public function mine(){
+        $user = Auth::user();
+        //if ($user->type == 'Event Organiser') {
+            return view('/list', array('events'=>where('event_organiser', $user->id)));
+        //} else {
+            
+            
+        //}
+        
+        
     }
 
 }
