@@ -18,12 +18,13 @@ Route::get('/', function () {
 
 Auth::routes();
 
+Route::get('events', 'EventController@all')->name('listAll');
+
 //Student
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('event/{id}', 'EventController@display')->name('display')->middleware('auth');
 Route::post('event/{id}/{interest}', 'EventController@display')->name('displayInterest')->middleware('auth');
-Route::get('events', 'EventController@all');
 Route::get('events/by/t/{category}/{startAt?}', 'EventController@category')->middleware('auth');;
 Route::get('events/by/popular/{startAt?}', 'EventController@popular')->middleware('auth');;
 Route::get('events/by/');
@@ -33,4 +34,5 @@ Route::get('events/new', 'EventController@newEvent')->name('newEvent')->middlewa
 Route::get('events/edit/{id}', 'EventController@edit')->name('editEvent')->middleware('auth');
 Route::post('events/save','EventController@save')->name('saveEvent');
 
-
+//Logged in users
+Route::get('events/mine', 'EventController@mine')->name('mine')->middleware('auth');

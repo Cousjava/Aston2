@@ -47,7 +47,7 @@
 
                             <div class="col-md-6">
                                 <input id="name" type="time" class="form-control{{ $errors->has('time') ? ' is-invalid' : '' }}" 
-                                       name="time" value="{{ $event->time }}" required >
+                                       name="time" value="{{ str_limit($event->time, 5, '') }}" required >
 
                                 @if ($errors->has('name'))
                                     <span class="invalid-feedback" role="alert">

@@ -29,10 +29,14 @@
     padding: 20px;
 }
 
-.trhover :hover {
+tr.trhover :hover {
     background-color: #ffffb3
 }
 
 .wide { 
     width:100%;
+}
+
+.largerFont { 
+    font-size: 18px
 }
