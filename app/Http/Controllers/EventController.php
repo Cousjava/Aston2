@@ -13,7 +13,8 @@ use App\Picture;
 class EventController extends Controller {
 
     public function all() {
-        return view('/list', array('events' => Event::all()));
+        $events = Event::paginate(20);
+        return view('/list', array('events' => $events));
     }
 
     public function display($id) {
@@ -43,14 +44,14 @@ class EventController extends Controller {
         $data = $request->all();
         
         $data['event_organiser'] = \Illuminate\Support\Facades\Auth::id();
-        Log::fine("Creating or updating an event with ".implode('|', $data));
+        Log::debug("Creating or updating an event with ".implode('|', $data));
         
         $event = Event::find($data[id]);
         if (isset($event)) {
-            Log::fine("Updating event".strval($event));
+            Log::debug("Updating event".strval($event));
             $event->fill($data);
             $event->save();
-            Log::fine("Event is now". strval($event));
+            Log::debug("Event is now". strval($event));
             //If checkboxes were checked then delete image
             foreach($request->oldimages as $toDelete){
                 Picture::destroy($toDelete);
@@ -66,6 +67,12 @@ class EventController extends Controller {
         return redirect()->route('display',$event->id);
     }
     
+    /**
+     * Sets a students interest in an event
+     * @param type $id event id
+     * @param type $interest true if the student is interested in the event
+     * @return type
+     */
     public function displayInterest($id, $interest = false) {
         $event = Event::find($id);
         $userId = Auth::id();
@@ -74,24 +81,31 @@ class EventController extends Controller {
         } else {
             $event->attendees()->detach($userId);
         }
-        return redirect()->route('display',$event->id); //Show original event again
+        //Show original event again with a redirect to make it idempotent
+        return redirect()->route('display',$event->id); 
     }
     
     public function category($category) {
-        return view('/list', array('events' => Event::query()->where('date' >= now())->where('category', $category)->paginate()));
+        return view('/list', array('events' => Event::query()->whereDate('date', '>=', now())->where('category', $category)->paginate(10)));
     }
     
     public function popular() {
-        $events = Event::query()->where('date' >= now())->withCount('attendees')->orderBy('attendees_count', 'desc')->paginate(50);
+        $events = Event::query()->whereDate('date', '>=', now())->withCount('attendees')->orderBy('attendees_count', 'desc')->paginate(10);
         return view('/list', $events);
+    }
+    
+    public function byDate(){
+        return view('/list', array('events' => Event::query()->orderBy('date')->paginate(10)));
     }
     
     public function mine(){
         $user = Auth::user();
-        if ($user->type == 'Event Organiser') {
-            return view('/list', array('events'=>where('event_organiser', $user->id)));
+        if ($user->type == 'event_organiser') {
+            $events = Event::query()->where('event_organiser', $user->id)->paginate(10);
+            return view('/list', array('events' => $events));
         } else {
-            return view('/list', array('events'=> $user->events())); 
+            $events = $user->events()->paginate(10);
+            return view('/list', array('events'=> $events)); 
         }
         
     }

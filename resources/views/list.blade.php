@@ -31,7 +31,7 @@
                         @endforeach
                     </tbody>
                 </table>
-
+                <?php echo $events->links(); ?>
             </div>
         </div>
     </div>
