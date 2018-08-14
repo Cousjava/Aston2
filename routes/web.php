@@ -24,10 +24,12 @@ Route::get('events', 'EventController@all')->name('listAll');
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('event/{id}', 'EventController@display')->name('display')->middleware('auth');
-Route::post('event/{id}/{interest}', 'EventController@display')->name('displayInterest')->middleware('auth');
+//Route::get('event/{id}/{interest}', 'EventController@display')->name('displayInterest')->middleware('auth');
 Route::get('events/by/t/{category}/{startAt?}', 'EventController@category')->middleware('auth');;
 Route::get('events/by/popular/{startAt?}', 'EventController@popular')->middleware('auth');;
 Route::get('events/by/');
+
+Route::post('intrest/{id}/{intrest?}', 'EventController@displayInterest')->name('displayInterest')->middleware('auth');
 
 //Organisers
 Route::get('events/new', 'EventController@newEvent')->name('newEvent')->middleware('auth');

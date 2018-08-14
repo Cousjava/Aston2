@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\User;
@@ -17,7 +19,9 @@ class EventController extends Controller {
     public function display($id) {
         $event = Event::findOrFail($id);
         $organiser = User::find($event->event_organiser);
-        return view('/display', array('event' => $event, 'pictures' => Picture::query()->where('event_id', $id)->get(), 'organiser'=> $organiser->name));
+        $intrested = DB::table('user_event_intrests')->where('userId', Auth::user()->id)->where('eventId', $event->id)->count();
+        return view('/display', array('event' => $event, 'pictures' => Picture::query()->where('event_id', $id)->get(), 'organiser'=> $organiser->name,
+                 'intrest' => $intrested));
     }
     
     public function edit($id) {
@@ -28,18 +32,25 @@ class EventController extends Controller {
         return view('/edit');
     }
     
+    /**
+     * Saves an event based on data in a request
+     * If an event id is provided then that request is edited,
+     * otherwise a new event is created
+     * @param Request $request
+     * @return type
+     */
     public function save(Request $request){
         $data = $request->all();
         
         $data['event_organiser'] = \Illuminate\Support\Facades\Auth::id();
-        Log::info("Creating or updating an event with ".implode('|', $data));
+        Log::fine("Creating or updating an event with ".implode('|', $data));
         
         $event = Event::find($data[id]);
         if (isset($event)) {
-            Log::info("Updating event".strval($event));
+            Log::fine("Updating event".strval($event));
             $event->fill($data);
             $event->save();
-            Log::info("Event is now". strval($event));
+            Log::fine("Event is now". strval($event));
             //If checkboxes were checked then delete image
             foreach($request->oldimages as $toDelete){
                 Picture::destroy($toDelete);
@@ -47,6 +58,7 @@ class EventController extends Controller {
         } else {
             $event = Event::create($data);
         }
+        //Add any images
         foreach($request->images as $image){
             $file = $image->store('photos');
             Picture::create(['location' => $file, 'event_id' => $event->id]);
@@ -54,15 +66,15 @@ class EventController extends Controller {
         return redirect()->route('display',$event->id);
     }
     
-    public function displayInterest($id, $interest) {
+    public function displayInterest($id, $interest = false) {
         $event = Event::find($id);
-        $userId = Auth::userId();
+        $userId = Auth::id();
         if ($interest) {
             $event->attendees()->attach($userId);
         } else {
             $event->attendees()->detach($userId);
         }
-        return display($id); //Show original event again
+        return redirect()->route('display',$event->id); //Show original event again
     }
     
     public function category($category) {
@@ -76,13 +88,11 @@ class EventController extends Controller {
     
     public function mine(){
         $user = Auth::user();
-        //if ($user->type == 'Event Organiser') {
+        if ($user->type == 'Event Organiser') {
             return view('/list', array('events'=>where('event_organiser', $user->id)));
-        //} else {
-            
-            
-        //}
-        
+        } else {
+            return view('/list', array('events'=> $user->events())); 
+        }
         
     }
 

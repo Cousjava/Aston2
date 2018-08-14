@@ -22,10 +22,25 @@
             <p>
                 {{$event->description}}    
             </p>
-            
+            @auth
             @if (Auth::id() == $event->event_organiser)
             <button onclick="location.href='{{ route('editEvent', $event->id) }}'">Edit</button>
             @endif
+            @if (Auth::user()->type == 'student')
+                @if ($intrest == 0)
+                    <form method="POST" action="{{ route('displayInterest', ['id'=>$event->id, 'intrest'=>true]) }}">
+                     @csrf
+                    <input type="hidden" name="intrest" value="true">
+                    <input type="submit" id="submitIntrest" value="I'm interested!">
+                @else
+                    <form method="POST" action="{{ route('displayInterest', ['id'=>$event->id, 'intrest'=>false]) }}">
+                    @csrf
+                    <input type="hidden" name="intrest" value="false">
+                    <input type="submit" id="submitIntrest" value="No longer interested">
+                @endif
+                </form>
+            @endif
+            @endauth
         </div>
     </div>
 </div>
